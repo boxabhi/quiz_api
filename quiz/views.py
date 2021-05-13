@@ -64,7 +64,30 @@ class AnswerViewSet(BaseAPIViewSet , AnswerMixin):
                                                                   **kwargs)
                                            
                                            
+
+
+class GetResultForQuizStatus(APIView):
+    serializer_class = QuizStatusSerializer
+    instance_name = "get_result"
+    logger = logger
+    model_class = QuizStatus
     
+    
+    def get(self,request):
+        try:
+            quiz_status_id = self.get_object(pk= request.GET.get('quiz_status_id'))
+            
+            return Response({
+                    'status': True,
+                    'message': 'Your Quize result',
+                    'data': self.serializer_class.get_result()
+                })
+        except Exception as e:
+            raise BaseValidationError('something went wrong')
+            
+            
+
+        
       
 
         

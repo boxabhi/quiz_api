@@ -2,7 +2,7 @@ from django.db.models import query
 from rest_framework import serializers
 from quiz.models import QuestionCategory,Question,Choice,Quiz , QuizStatus,QuestionAttempted
 from django.contrib.auth.models import User
-import base64
+from rest_framework.views import APIView
 from base_rest.exceptions import BaseValidationError
 
 import logging
@@ -111,8 +111,11 @@ class QuizStatusSerializer(serializers.ModelSerializer):
             quiz_status_obj = QuizStatus.objects.get(id = validated_data['quiz_status_id'])
             question_obj = Question.objects.get(id = validated_data['question_id'])
             
+            if quiz_status_obj.is_completed:
+                return False , 'You have already completed quiz'
+                
 
-            
+        
             if validated_data['is_subjective']:
                 question_attempted_obj = QuestionAttempted.objects.create(
                     quiz_status = quiz_status_obj,
@@ -123,37 +126,30 @@ class QuizStatusSerializer(serializers.ModelSerializer):
             else:
                 correct_answer_obj = Choice.objects.filter(is_correct=True , question__id= validated_data['question_id']).first()
                 if correct_answer_obj is None:
-                    return False
+                    return False , ''
                 
-            
                 user_answer_obj = Choice.objects.get(id = validated_data['answer_id'])
-            
-
-            
                 question_attempted_obj = QuestionAttempted.objects.create(
                     quiz_status = quiz_status_obj,
                     question = correct_answer_obj.question,
                     answer_answered_by_user = user_answer_obj
                 )
             
-         
                 if user_answer_obj == correct_answer_obj:
                     question_attempted_obj.marks = correct_answer_obj.question.marks_per_question
                     question_attempted_obj.save()
             
-
-            return True
+            return True , ''
 
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             logger.error("store_answer: %s at %s", str(e), str(exc_tb.tb_lineno))
-
             
-            return False
+            return False , 'Something went wrong'
     
         
+    
+    def get_result(obj):
+        pass
         
 
-
-
-        

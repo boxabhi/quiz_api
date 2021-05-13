@@ -51,17 +51,17 @@ class AnswerMixin:
         if not serializer.is_valid():
             raise BaseValidationError(serializer.errors)
          
-         
-        _serializer = self.serializer_class.store_answer(serializer.data)
+        _serializer, message = self.serializer_class.store_answer(serializer.data)
         
         if _serializer is False:
-            raise BaseValidationError('something went wrong')
+            raise BaseValidationError(message)
 
         return Response({
                     'status': True,
                     'message': 'Your answer submitted',
                 })
-            
+    
+    
             
             
         
