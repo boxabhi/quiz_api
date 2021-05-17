@@ -2,8 +2,10 @@ from base_rest.exceptions import BaseValidationError
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from .serializer import (StoreAnswerSerializer)
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
-from quiz.api.serializer import *
 
 
 

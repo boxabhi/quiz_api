@@ -1,19 +1,13 @@
 from django.db import models
-
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 import random 
-from django.contrib.auth import get_user_model
-User = get_user_model()
-
 import logging
 import sys
 import uuid
 from base_rest.models import BaseModel
-
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 logger = logging.getLogger(__name__)
-
 
 
 
@@ -34,7 +28,7 @@ class QuestionCategory(BaseModel):
 
 class Question(BaseModel):
    
-    question_category = models.ForeignKey("QuestionCategory", on_delete=models.CASCADE , null=True , blank=True)
+    question_category = models.ForeignKey("QuestionCategory",related_name="question_category", on_delete=models.CASCADE , null=True , blank=True)
     question_text = models.CharField(max_length=1000)
     question_type = models.IntegerField(choices = ((1 , 'MCQ') , (2 , 'SUBJECTIVE')))
     marks_per_question = models.IntegerField(default=5)
@@ -79,8 +73,8 @@ class Quiz(BaseModel):
 
 class QuizStatus(BaseModel):
    
-    user = models.ForeignKey(User , on_delete=models.SET_NULL ,null =True , blank = True)
-    quiz = models.ForeignKey(Quiz , on_delete=models.SET_NULL , null = True , blank =True)
+    user = models.ForeignKey(User , related_name="user" , on_delete=models.SET_NULL ,null =True , blank = True)
+    quiz = models.ForeignKey(Quiz , related_name="quiz" , on_delete=models.SET_NULL , null = True , blank =True)
     quiz_status_json = models.TextField(default="[]")
     is_completed = models.BooleanField(default=False)
    
@@ -91,20 +85,14 @@ class QuizStatus(BaseModel):
             quiz_categories = self.quiz.question_category.all()
             
             questions  = []
-            
-            print(question_limit_per_section)
+        
             
             for quiz_category in quiz_categories:
                 questions_by_category = Question.objects.filter(question_category = quiz_category )
-                print(questions_by_category)
                 random_question_by_category = (list(questions_by_category))
-                
                 # shuffling to get random data
-                
                 random.shuffle(random_question_by_category)
-                random_question_by_category = random_question_by_category[0:question_limit_per_section]
-
-                    
+                random_question_by_category = random_question_by_category[0:question_limit_per_section]                    
                 for random_question in random_question_by_category:
                     questions.append(random_question)
             
@@ -114,7 +102,7 @@ class QuizStatus(BaseModel):
             
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
-            logger.error("QuizAttemptViewSet: %s at %s", str(e), str(exc_tb.tb_lineno))
+            logger.error("generate_random_questions: %s at %s", str(e), str(exc_tb.tb_lineno))
 
         
         

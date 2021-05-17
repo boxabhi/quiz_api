@@ -1,23 +1,22 @@
-from quiz.api.serializer import *
+from django.contrib.auth import get_user_model
+User = get_user_model()
 from base_rest.exceptions import BaseValidationError
 from base_rest.viewsets import BaseAPIViewSet
 from django.db import transaction
 from rest_framework import status
-from rest_framework.decorators import action
-from rest_framework.exceptions import ValidationError
+
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import QuizStatus
-from quiz.api.mixins import QuizMixin , AnswerMixin
+from .mixins import QuizMixin , AnswerMixin
 import logging
 import sys
 from django.contrib.auth import get_user_model
-from rest_framework.permissions import IsAuthenticated, AllowAny
 from base_rest.permissions import IsOwnerAttributes
-
-User = get_user_model()
-
+from .serializer import (GetAllQuizStatusSerlizer,QuizStatusSerializer)
 logger = logging.getLogger(__name__)
+
+
 
 
 
@@ -44,7 +43,8 @@ class QuizAttemptViewSet(BaseAPIViewSet , QuizMixin):
             ''' To get completed or uncompleted quizes '''
             completed_or_not_completed = request.GET.get('is_completed' , False)
             
-            user_obj = request.user
+            #user_obj = request.user
+            user_obj = User.objects.first()
             serializer = GetAllQuizStatusSerlizer
             
             ''' getting assiged quiz from serlizers method '''

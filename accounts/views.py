@@ -1,28 +1,13 @@
-
-import uuid
-from django.shortcuts import render
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import generics
-from rest_framework.mixins import CreateModelMixin 
-from rest_framework.generics import GenericAPIView
-
-from .serializers import (  LoginSerializer,
-                            PasswordSerializer,
-                            UserSerializer , ForgetPasswordSerializer)
-
-from rest_framework import viewsets
-from django.contrib.auth.hashers import check_password
-from rest_framework import status
-from .models import ForgetPassword
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.decorators import action
-from base_rest.viewsets import BaseAPIViewSet
-
 from django.contrib.auth import get_user_model
 User = get_user_model()
-
+import uuid
+from rest_framework.response import Response
+from .serializers import (LoginSerializer,
+                            UserSerializer , ForgetPasswordSerializer)
+from rest_framework import status
+from base_rest.viewsets import BaseAPIViewSet
 from .mixins import AccountMixin
+
 
 
 ''' ModelViewSet for registering user '''
