@@ -8,11 +8,14 @@ from .manager import UserManager
 from .thread import SendAccountActivationEmail , SendForgetPasswordEmail
 from django.contrib.auth.signals import user_logged_in, user_logged_out 
 import datetime
+import uuid
+
 
 
 
 
 class User(AbstractUser):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     username = None
     email = models.EmailField( unique=True)
     is_verified = models.BooleanField(default=False)

@@ -11,6 +11,12 @@ from .models import QuizStatus
 from quiz.api.mixins import QuizMixin , AnswerMixin
 import logging
 import sys
+from django.contrib.auth import get_user_model
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from base_rest.permissions import IsOwnerAttributes
+
+User = get_user_model()
+
 logger = logging.getLogger(__name__)
 
 
@@ -25,6 +31,7 @@ class QuizAttemptViewSet(BaseAPIViewSet , QuizMixin):
     
     ACTION_SERIALIZERS = {'approve': QuizStatusSerializer ,'get_all_quiz_status' : GetAllQuizStatusSerlizer}
     
+    permission_classes = (IsOwnerAttributes,)
     
     def get_serializer(self, *args, **kwargs):
         return self.ACTION_SERIALIZERS.get(self.action,

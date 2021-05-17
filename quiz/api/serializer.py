@@ -106,6 +106,7 @@ class QuizStatusSerializer(serializers.ModelSerializer):
         
     def get_questions(self):
         queryset = self.generate_random_questions()
+        print(queryset)
         question_serializer = QuestionSerializer(queryset , many=True)
         return question_serializer.data
     

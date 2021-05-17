@@ -1,12 +1,27 @@
 from django.db import models
-from django.contrib.auth.models import User
+
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+import random 
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
-class QuestionCategory(models.Model):
+import logging
+import sys
+import uuid
+from base_rest.models import BaseModel
+
+
+logger = logging.getLogger(__name__)
+
+
+
+
+
+
+class QuestionCategory(BaseModel):
     category_name = models.CharField(max_length=100)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+   
     
     class Meta:
         verbose_name = 'QuestionCategory'
@@ -17,13 +32,13 @@ class QuestionCategory(models.Model):
 
 
 
-class Question(models.Model):
+class Question(BaseModel):
+   
     question_category = models.ForeignKey("QuestionCategory", on_delete=models.CASCADE , null=True , blank=True)
     question_text = models.CharField(max_length=1000)
     question_type = models.IntegerField(choices = ((1 , 'MCQ') , (2 , 'SUBJECTIVE')))
     marks_per_question = models.IntegerField(default=5)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+
     
     def __str__(self):
         return self.question_text
@@ -34,12 +49,12 @@ class Question(models.Model):
         return "SUBJECTIVE"
 
 
-class Choice(models.Model):
+class Choice(BaseModel):
+   
     question = models.ForeignKey("Question", related_name="choices" , on_delete=models.CASCADE)
     choice = models.CharField("Choice", max_length=50)
     is_correct = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    
     
     class Meta:
         unique_together = [
@@ -50,51 +65,67 @@ class Choice(models.Model):
         return self.choice
 
 
-class Quiz(models.Model):
+class Quiz(BaseModel):
+
     quiz_name = models.CharField(max_length=100)
     question_category = models.ManyToManyField(QuestionCategory)
     question_limit_per_section = models.IntegerField(default=5)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    
     
     def __str__(self):
         return self.quiz_name
 
     
 
-class QuizStatus(models.Model):
+class QuizStatus(BaseModel):
+   
     user = models.ForeignKey(User , on_delete=models.SET_NULL ,null =True , blank = True)
     quiz = models.ForeignKey(Quiz , on_delete=models.SET_NULL , null = True , blank =True)
     quiz_status_json = models.TextField(default="[]")
     is_completed = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
+   
     
     def generate_random_questions(self):
         try:
             question_limit_per_section = self.quiz.question_limit_per_section
             quiz_categories = self.quiz.question_category.all()
-            questions_by_categories = Question.objects.filter(question_category__in = quiz_categories )
-            return questions_by_categories
+            
+            questions  = []
+            
+            print(question_limit_per_section)
+            
+            for quiz_category in quiz_categories:
+                questions_by_category = Question.objects.filter(question_category = quiz_category )
+                print(questions_by_category)
+                random_question_by_category = (list(questions_by_category))
+                
+                # shuffling to get random data
+                
+                random.shuffle(random_question_by_category)
+                random_question_by_category = random_question_by_category[0:question_limit_per_section]
+
+                    
+                for random_question in random_question_by_category:
+                    questions.append(random_question)
+            
+            return questions
             
             
             
         except Exception as e:
-            print(e)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            logger.error("QuizAttemptViewSet: %s at %s", str(e), str(exc_tb.tb_lineno))
+
         
         
-class QuestionAttempted(models.Model):
+class QuestionAttempted(BaseModel):
+ 
     quiz_status = models.ForeignKey(QuizStatus , on_delete=models.CASCADE)
     question = models.ForeignKey(Question , on_delete=models.SET_NULL , null=True , blank=True)
     answer_answered_by_user = models.ForeignKey(Choice , on_delete=models.SET_NULL , null=True , blank=True)
     subjective_answer = models.TextField(blank=True , null=True)
     marks = models.IntegerField(default=-1)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    
- 
+  
  
 
 
