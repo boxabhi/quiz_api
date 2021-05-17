@@ -14,7 +14,7 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 
     
 app.conf.beat_schedule = {
-    'add-every-40-seconds': {
+    'add-every-3-minute': {
         'task': 'delete_users',
         'schedule': crontab(minute="*/3"),  
         
