@@ -33,7 +33,10 @@ class GetAllQuizStatusSerlizer(serializers.ModelSerializer):
             print(("get_assigned_quizs: %s at %s", str(e), str(exc_tb.tb_lineno)))
             return {}
     
+#student = {'first_name' : 'John', 'last_name' : 'gupta' , 'is_gupta' : True}
+
         
+
 
 
 
@@ -150,6 +153,25 @@ class QuizStatusSerializer(serializers.ModelSerializer):
         
     
     def get_result(obj):
-        pass
+        try:
+            question_attempted_objs= QuestionAttempted.objects.filter(quiz_status = obj)
+            data = []
+            tototal_score = 0
+            for question_attempted_obj in question_attempted_objs:
+                
+                result = {
+                    'question' : question_attempted_obj.question.question_text,
+                }
+                if question_attempted_obj.answer_answered_by_user:
+                    result['answer'] = question_attempted_obj.answer_answered_by_user.choice
+                else:
+                    result['answer'] = question_attempted_obj.subjective_answer
+                    
+                    
+            
+            
+            
+        except Exception as e:
+            print(e)
         
 
