@@ -1,15 +1,8 @@
-from django.db.models import query
 from rest_framework import serializers
 from quiz.models import QuestionCategory,Question,Choice,Quiz , QuizStatus,QuestionAttempted
 from django.contrib.auth.models import User
-from rest_framework.views import APIView
-from base_rest.exceptions import BaseValidationError
-
 import logging
-import threading
 import sys
-import math
-import json
 logger = logging.getLogger(__name__)
 
 
@@ -114,16 +107,14 @@ class QuizStatusSerializer(serializers.ModelSerializer):
         question_serializer = QuestionSerializer(queryset , many=True)
         return question_serializer.data
     
-    def store_answer(validated_data):
+    def create(self , validated_data):
         try:
             quiz_status_obj = QuizStatus.objects.get(id = validated_data['quiz_status_id'])
             question_obj = Question.objects.get(id = validated_data['question_id'])
             
             if quiz_status_obj.is_completed:
                 return False , 'You have already completed quiz'
-                
-
-        
+ 
             if validated_data['is_subjective']:
                 question_attempted_obj = QuestionAttempted.objects.create(
                     quiz_status = quiz_status_obj,
@@ -163,7 +154,6 @@ class QuizStatusSerializer(serializers.ModelSerializer):
             data = []
             tototal_score = 0
             for question_attempted_obj in question_attempted_objs:
-                
                 result = {
                     'question' : question_attempted_obj.question.question_text,
                 }
@@ -172,10 +162,6 @@ class QuizStatusSerializer(serializers.ModelSerializer):
                 else:
                     result['answer'] = question_attempted_obj.subjective_answer
                     
-                    
-            
-            
-            
         except Exception as e:
             print(e)
         

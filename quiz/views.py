@@ -43,8 +43,8 @@ class QuizAttemptViewSet(BaseAPIViewSet , QuizMixin):
             ''' To get completed or uncompleted quizes '''
             completed_or_not_completed = request.GET.get('is_completed' , False)
             
-            #user_obj = request.user
-            user_obj = User.objects.first()
+            user_obj = request.user
+            #user_obj = User.objects.first()
             serializer = GetAllQuizStatusSerlizer
             
             ''' getting assiged quiz from serlizers method '''
