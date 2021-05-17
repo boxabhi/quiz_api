@@ -11,6 +11,9 @@ class QuizMixin:
     
     @action(detail=True, methods=["get"] , url_path = 'get-quizes' , url_name ="get-quizes")
     def get_all_quizs(self, request, pk, *args, **kwargs):
+        
+        ''' Action to get all quizes  according to is_completed True/False '''
+        
         try:
             completed_or_not_completed = request.GET.get('is_completed' , False)
             user_obj = User.objects.first()
@@ -27,6 +30,8 @@ class QuizMixin:
     
     @action(detail=True, methods=["get"] , url_path = 'get-quizes-questions' , url_name ="get-quizes-questions")
     def get_quiz_questions_from_quiz_status(self, request, pk, *args, **kwargs):
+        ''' Getting quiz from quiz status '''
+        
         try:
             obj = self.get_object(pk=pk)
             return Response({

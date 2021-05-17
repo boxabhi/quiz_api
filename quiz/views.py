@@ -41,9 +41,14 @@ class QuizAttemptViewSet(BaseAPIViewSet , QuizMixin):
     
     def list(self , request ,*args, **kwargs):
         try:
+            ''' To get completed or uncompleted quizes '''
             completed_or_not_completed = request.GET.get('is_completed' , False)
-            user_obj = User.objects.first()
+            
+            user_obj = request.user
             serializer = GetAllQuizStatusSerlizer
+            
+            ''' getting assiged quiz from serlizers method '''
+            
             return Response({
                     'status': True,
                     'message': 'Your Quizes',
@@ -59,11 +64,16 @@ class QuizAttemptViewSet(BaseAPIViewSet , QuizMixin):
 
             
 class AnswerViewSet(BaseAPIViewSet , AnswerMixin):
+    
+    
+    
     queryset = QuizStatus.objects.all()
     serializer_class = QuizStatusSerializer
     model_class = QuizStatus
     instance_name = "quiz_attempt"
     ACTION_SERIALIZERS = {'approve': QuizStatusSerializer ,'get_all_quiz_status' : GetAllQuizStatusSerlizer}
+    
+    permission_classes = (IsOwnerAttributes,)
     
     def get_serializer(self, *args, **kwargs):
         return self.ACTION_SERIALIZERS.get(self.action,

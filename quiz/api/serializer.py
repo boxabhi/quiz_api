@@ -102,11 +102,14 @@ class QuizStatusSerializer(serializers.ModelSerializer):
         exclude = ('created_at', 'updated_at' , 'quiz_status_json' , 'user')
         
     def get_assigned_quiz(self):
+        
         queryset = self.get_assigned_quiz()
         
     def get_questions(self):
+        ''' Calling metho on model class generate_random_questions to get random questions '''
+        
         queryset = self.generate_random_questions()
-        print(queryset)
+       
         question_serializer = QuestionSerializer(queryset , many=True)
         return question_serializer.data
     
