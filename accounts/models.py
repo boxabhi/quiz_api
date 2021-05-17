@@ -12,6 +12,10 @@ import uuid
 
 
 
+class Test(models.Model):
+    name = models.CharField(max_length=100)
+
+
 
 
 class User(AbstractUser):
@@ -23,6 +27,9 @@ class User(AbstractUser):
     forget_password_token = models.CharField(max_length=200 ,null=True, blank=True)
     last_login_time = models.DateTimeField(null=True, blank=True)
     last_logout_time = models.DateTimeField(null=True, blank=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
 
     USERNAME_FIELD = 'email'

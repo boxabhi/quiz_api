@@ -12,6 +12,9 @@ from .mixins import AccountMixin
 
 ''' ModelViewSet for registering user '''
 
+
+
+
 class AccountViewSet(BaseAPIViewSet , AccountMixin):
     queryset = User.objects.all()
     model_class = User
