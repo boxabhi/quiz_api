@@ -12,8 +12,6 @@ import uuid
 
 
 
-class Test(models.Model):
-    name = models.CharField(max_length=100)
 
 
 
